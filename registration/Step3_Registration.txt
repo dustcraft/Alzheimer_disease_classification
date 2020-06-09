@@ -1,0 +1,21 @@
+
+# flirt 
+
+# fnirt
+
+# applywarp
+
+
+
+
+
+
+##################
+## step 1: affine coregistration from diffusion space to T1 space
+flirt -in $SC01_B0_Brain -ref $SC01_T1_brain -omat $diff2str_name
+## step 2: affine coregistration from T1 space to MNI space
+flirt -in $SC01_T1_brain -ref $MNI_T1_2mm_brain -omat $str2standard_name
+## step 3: non-linear coregistration from T1 space to MNI space (non-betted T1 images are preferred)
+fnirt --in=$SC01_T1 --aff=$str2standard_name --cout=$str2standard_warp_name --ref=$MNI152_T1_2mm
+# Write the non-linear parameter for diffusion data (namely, transform diffusion data into MNI space)
+applywarp --ref=$MNI152_T1_2mm --in=$SC01_B0_Brain --warp=$str2standard_warp_name  --premat=$diff2str_name --out=$NL_MNI_SC01_B0_brain
